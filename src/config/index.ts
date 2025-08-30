@@ -9,7 +9,11 @@ export function parseArguments(): {
   characters?: string;
 } {
   try {
-    return yargs(process.argv.slice(2))
+    // Some package runners (npm/pnpm) insert a standalone "--" to separate script args.
+    // yargs treats "--" as end-of-options, so we strip it before parsing.
+    const raw = process.argv.slice(2);
+    const cleaned = raw.filter((tok) => tok !== "--");
+    return yargs(cleaned)
       .option("character", {
         type: "string",
         description: "Path to the character JSON file",
